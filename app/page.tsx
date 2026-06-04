@@ -1,65 +1,145 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import VlogGrid from '@/components/vlog/VlogGrid';
+
+const CATEGORIES = ['all', 'travel', 'tech', 'lifestyle', 'food', 'music', 'sports', 'education', 'other'];
+const SORT_OPTIONS = [
+  { value: 'newest', label: 'Newest' },
+  { value: 'oldest', label: 'Oldest' },
+  { value: 'most_viewed', label: 'Most Viewed' },
+  { value: 'most_liked', label: 'Most Liked' },
+];
+
+export default function HomePage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Read filters from URL params
+  const [category, setCategory] = useState(searchParams.get('category') || 'all');
+  const [sort, setSort] = useState(searchParams.get('sort') || 'newest');
+  const [page, setPage] = useState(1);
+
+  const [vlogs, setVlogs] = useState([]);
+  const [pagination, setPagination] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const search = searchParams.get('search') || '';
+
+  // Fetch vlogs whenever filters change
+  useEffect(() => {
+    const fetchVlogs = async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: '12',
+          sort,
+          ...(category !== 'all' && { category }),
+          ...(search && { search }),
+        });
+
+        const res = await fetch(`/api/vlogs?${params}`);
+        const data = await res.json();
+
+        if (data.success) {
+          // If loading more (page > 1), append to existing vlogs
+          // If new filter, replace
+          if (page === 1) {
+            setVlogs(data.data.vlogs);
+          } else {
+            setVlogs((prev) => [...prev, ...data.data.vlogs]);
+          }
+          setPagination(data.data.pagination);
+        }
+      } catch (error) {
+        console.error('Failed to fetch vlogs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVlogs();
+  }, [category, sort, page, search]);
+
+  // When category or sort changes, reset to page 1
+  const handleCategoryChange = (newCategory) => {
+    setCategory(newCategory);
+    setPage(1);
+  };
+
+  const handleSortChange = (newSort) => {
+    setSort(newSort);
+    setPage(1);
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div>
+      {/* Search result heading */}
+      {search && (
+        <div className="mb-4">
+          <h2 className="text-white text-lg">
+            Search results for <span className="text-blue-400">"{search}"</span>
+          </h2>
+          <button
+            onClick={() => router.push('/')}
+            className="text-gray-400 text-sm hover:text-white mt-1"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            ✕ Clear search
+          </button>
         </div>
-      </main>
+      )}
+
+      {/* Filter Bar + Sort */}
+      <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
+
+        {/* Category Filter */}
+        <div className="flex gap-2 flex-wrap">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => handleCategoryChange(cat)}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium capitalize transition-colors ${
+                category === cat
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Sort Dropdown */}
+        <select
+          value={sort}
+          onChange={(e) => handleSortChange(e.target.value)}
+          className="bg-gray-800 border border-gray-700 text-gray-300 text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-blue-500"
+        >
+          {SORT_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Vlog Grid */}
+      <VlogGrid vlogs={vlogs} loading={loading && page === 1} />
+
+      {/* Load More Button */}
+      {pagination?.hasNextPage && (
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={() => setPage((prev) => prev + 1)}
+            disabled={loading}
+            className="bg-gray-800 hover:bg-gray-700 disabled:opacity-50 text-white px-8 py-3 rounded-full text-sm font-medium transition-colors"
+          >
+            {loading ? 'Loading...' : 'Load More'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
