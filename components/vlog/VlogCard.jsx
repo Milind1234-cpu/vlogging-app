@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
-// Helper — converts seconds to "8:07" format
 function formatDuration(seconds) {
   if (!seconds) return '0:00';
   const mins = Math.floor(seconds / 60);
@@ -9,7 +8,6 @@ function formatDuration(seconds) {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-// Helper — converts 3820 to "3.8K", 1200000 to "1.2M"
 function formatCount(num) {
   if (!num) return '0';
   if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -17,7 +15,6 @@ function formatCount(num) {
   return num.toString();
 }
 
-// Helper — converts date to "3 days ago"
 function timeAgo(dateString) {
   const date = new Date(dateString);
   const now = new Date();
@@ -36,57 +33,59 @@ function timeAgo(dateString) {
 
 export default function VlogCard({ vlog }) {
   return (
-    <Link href={`/vlog/${vlog._id}`} className="group block">
-      <div className="bg-gray-900 rounded-xl overflow-hidden border border-gray-800 hover:border-gray-600 transition-all duration-200 hover:transform hover:scale-[1.02]">
+    <Link href={`/vlog/${vlog._id}`} className="group block vlog-card">
+      <div className="bg-gray-900/60 rounded-2xl overflow-hidden border border-white/5 hover:border-indigo-500/30 transition-all duration-300">
 
         {/* Thumbnail */}
-        <div className="relative aspect-video bg-gray-800">
+        <div className="relative aspect-video bg-gray-800 overflow-hidden">
           {vlog.thumbnailUrl ? (
             <Image
               src={vlog.thumbnailUrl}
               alt={vlog.title}
               fill
-              className="object-cover"
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
-            // Fallback if no thumbnail
-            <div className="w-full h-full flex items-center justify-center">
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
               <span className="text-gray-600 text-4xl">🎬</span>
             </div>
           )}
 
-          {/* Duration Badge — bottom right of thumbnail */}
+          {/* Gradient overlay on hover */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+          {/* Duration Badge */}
           {vlog.duration > 0 && (
-            <span className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-0.5 rounded font-mono">
+            <span className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded-lg font-mono font-medium">
               {formatDuration(vlog.duration)}
             </span>
           )}
 
-          {/* Category Badge — top left */}
+          {/* Category Badge */}
           {vlog.category && (
-            <span className="absolute top-2 left-2 bg-blue-600/80 text-white text-xs px-2 py-0.5 rounded-full capitalize">
+            <span className="absolute top-2 left-2 bg-indigo-600/80 backdrop-blur-sm text-white text-xs px-2.5 py-0.5 rounded-full capitalize font-medium">
               {vlog.category}
             </span>
           )}
         </div>
 
         {/* Card Body */}
-        <div className="p-3">
-
-          {/* Title — max 2 lines */}
-          <h3 className="text-white font-medium text-sm leading-snug line-clamp-2 mb-2 group-hover:text-blue-400 transition-colors">
+        <div className="p-4">
+          {/* Title */}
+          <h3 className="text-white font-semibold text-sm leading-snug line-clamp-2 mb-3 group-hover:text-indigo-300 transition-colors">
             {vlog.title}
           </h3>
 
           {/* Creator Row */}
-          <div className="flex items-center gap-2 mb-2">
-            {/* Avatar */}
-            <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-xs text-white font-semibold shrink-0 overflow-hidden">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 ring-1 ring-white/10">
               {vlog.creator?.avatar ? (
                 <img src={vlog.creator.avatar} alt={vlog.creator.name} className="w-full h-full object-cover" />
               ) : (
-                vlog.creator?.name?.[0]?.toUpperCase()
+                <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs text-white font-bold">
+                  {vlog.creator?.name?.[0]?.toUpperCase()}
+                </div>
               )}
             </div>
             <span className="text-gray-400 text-xs truncate">{vlog.creator?.name}</span>
@@ -95,17 +94,17 @@ export default function VlogCard({ vlog }) {
           {/* Stats Row */}
           <div className="flex items-center justify-between text-xs text-gray-500">
             <div className="flex items-center gap-3">
-              {/* Views */}
-              <span>👁 {formatCount(vlog.viewCount)}</span>
-              {/* Likes */}
-              <span>❤ {formatCount(vlog.likeCount)}</span>
+              <span className="flex items-center gap-1">
+                <span>👁</span> {formatCount(vlog.viewCount)}
+              </span>
+              <span className="flex items-center gap-1">
+                <span>❤️</span> {formatCount(vlog.likeCount)}
+              </span>
             </div>
-            {/* Time ago */}
             <span>{timeAgo(vlog.createdAt)}</span>
           </div>
-
         </div>
       </div>
     </Link>
   );
-}   
+}

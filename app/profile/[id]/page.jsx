@@ -59,7 +59,7 @@ export default function ProfilePage() {
         setPage(nextPage);
       }
     } catch (err) {
-      console.error('Failed to load more vlogs');
+      console.error('Failed to load more');
     } finally {
       setLoadingMore(false);
     }
@@ -67,17 +67,11 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="animate-pulse">
-        <div className="flex items-center gap-4 mb-8">
-          <div className="w-20 h-20 rounded-full bg-gray-800" />
-          <div className="space-y-2">
-            <div className="h-6 bg-gray-800 rounded w-40" />
-            <div className="h-4 bg-gray-800 rounded w-60" />
-          </div>
-        </div>
-        <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="animate-pulse space-y-6">
+        <div className="h-48 shimmer rounded-3xl" />
+        <div className="grid grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 bg-gray-800 rounded-xl" />
+            <div key={i} className="h-24 shimmer rounded-2xl" />
           ))}
         </div>
       </div>
@@ -95,48 +89,68 @@ export default function ProfilePage() {
   return (
     <div>
       {/* Profile Header */}
-      <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 mb-6">
-        <div className="flex items-start gap-4 mb-6">
-          {/* Avatar */}
-          <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center text-white font-bold text-2xl overflow-hidden shrink-0">
-            {profile.avatar ? (
-              <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
-            ) : (
-              profile.name?.[0]?.toUpperCase()
-            )}
+      <div className="relative mb-8 rounded-3xl overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/40 via-purple-900/20 to-gray-900" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-indigo-600/10 via-transparent to-transparent" />
+
+        <div className="relative p-8">
+          <div className="flex items-start gap-6 mb-8">
+            {/* Avatar */}
+            <div className="w-24 h-24 rounded-3xl overflow-hidden shrink-0 ring-4 ring-indigo-500/20 shadow-2xl shadow-indigo-500/10">
+              {profile.avatar ? (
+                <img
+                  src={profile.avatar}
+                  alt={profile.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-3xl">
+                  {profile.name?.[0]?.toUpperCase()}
+                </div>
+              )}
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 pt-2">
+              <h1 className="text-white text-3xl font-black mb-1">{profile.name}</h1>
+              {profile.bio && (
+                <p className="text-gray-300 text-sm mb-2">{profile.bio}</p>
+              )}
+              <p className="text-gray-500 text-xs">
+                🗓 Member since {new Date(profile.createdAt).toLocaleDateString('en-US', {
+                  month: 'long',
+                  year: 'numeric'
+                })}
+              </p>
+            </div>
           </div>
 
-          {/* Info */}
-          <div className="flex-1">
-            <h1 className="text-white text-2xl font-bold">{profile.name}</h1>
-            {profile.bio && (
-              <p className="text-gray-400 text-sm mt-1">{profile.bio}</p>
-            )}
-            <p className="text-gray-500 text-xs mt-2">
-              Member since {new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-            </p>
-          </div>
-        </div>
-
-        {/* Stats Row */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-gray-800 rounded-xl p-4 text-center">
-            <p className="text-white text-2xl font-bold">{profile.totalVlogs}</p>
-            <p className="text-gray-400 text-sm">Vlogs</p>
-          </div>
-          <div className="bg-gray-800 rounded-xl p-4 text-center">
-            <p className="text-white text-2xl font-bold">{formatCount(profile.totalViews)}</p>
-            <p className="text-gray-400 text-sm">Views</p>
-          </div>
-          <div className="bg-gray-800 rounded-xl p-4 text-center">
-            <p className="text-white text-2xl font-bold">{formatCount(profile.totalLikes)}</p>
-            <p className="text-gray-400 text-sm">Likes</p>
+          {/* Stats Row */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="glass rounded-2xl p-4 text-center border border-white/5">
+              <p className="text-white text-2xl font-black">{profile.totalVlogs}</p>
+              <p className="text-gray-400 text-xs mt-1">Vlogs</p>
+            </div>
+            <div className="glass rounded-2xl p-4 text-center border border-white/5">
+              <p className="text-blue-400 text-2xl font-black">{formatCount(profile.totalViews)}</p>
+              <p className="text-gray-400 text-xs mt-1">Total Views</p>
+            </div>
+            <div className="glass rounded-2xl p-4 text-center border border-white/5">
+              <p className="text-red-400 text-2xl font-black">{formatCount(profile.totalLikes)}</p>
+              <p className="text-gray-400 text-xs mt-1">Total Likes</p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Vlogs Grid */}
-      <h2 className="text-white text-lg font-semibold mb-4">Vlogs</h2>
+      {/* Vlogs Section */}
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-white text-lg font-bold">
+          Vlogs <span className="text-gray-500 font-normal text-sm">({profile.totalVlogs})</span>
+        </h2>
+      </div>
+
       <VlogGrid vlogs={vlogs} loading={false} />
 
       {/* Load More */}
@@ -145,7 +159,7 @@ export default function ProfilePage() {
           <button
             onClick={loadMore}
             disabled={loadingMore}
-            className="bg-gray-800 hover:bg-gray-700 disabled:opacity-50 text-white px-8 py-3 rounded-full text-sm font-medium transition-colors"
+            className="bg-white/5 hover:bg-white/10 border border-white/10 disabled:opacity-50 text-white px-8 py-3 rounded-full text-sm font-medium transition-all"
           >
             {loadingMore ? 'Loading...' : 'Load More'}
           </button>

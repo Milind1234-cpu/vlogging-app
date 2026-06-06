@@ -1,4 +1,4 @@
-'use client'; // This is a client component — it needs browser APIs and useState
+'use client';
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
@@ -7,72 +7,72 @@ import Link from 'next/link';
 
 export default function LoginPage() {
   const router = useRouter();
-
-  // Form state
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Update form state on every keystroke
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(''); // clear error when user starts typing again
+    setError('');
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // prevent default browser form submission
+    e.preventDefault();
     setLoading(true);
     setError('');
 
-    // Basic client-side validation before hitting the API
     if (!formData.email || !formData.password) {
       setError('Please fill in all fields');
       setLoading(false);
       return;
     }
 
-    // NextAuth signIn — calls our authorize() function in lib/auth.js
     const result = await signIn('credentials', {
       email: formData.email,
       password: formData.password,
-      redirect: false, // handle redirect manually so we can show errors
+      redirect: false,
     });
 
     if (result?.error) {
-      // NextAuth passes the error message from authorize() here
       setError(result.error);
       setLoading(false);
       return;
     }
 
-    // Login successful — go to home feed
     router.push('/');
-    router.refresh(); // refresh server components to pick up new session
+    router.refresh();
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4 relative overflow-hidden">
 
-        {/* Logo / Header */}
+      {/* Background gradient orbs */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="w-full max-w-md relative z-10">
+
+        {/* Logo */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white">VlogApp</h1>
-          <p className="text-gray-400 mt-2">Sign in to your account</p>
+          <Link href="/">
+            <h1 className="text-4xl font-black gradient-text mb-2">VlogApp</h1>
+          </Link>
+          <p className="text-gray-400">Welcome back — sign in to continue</p>
         </div>
 
-        {/* Form Card */}
-        <div className="bg-gray-900 rounded-2xl p-8 shadow-xl border border-gray-800">
+        {/* Card */}
+        <div className="glass rounded-3xl p-8 border border-white/10">
 
-          {/* Error Message */}
+          {/* Error */}
           {error && (
-            <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg mb-6 text-sm">
-              {error}
+            <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-2xl mb-6 text-sm flex items-center gap-2">
+              <span>⚠️</span> {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
 
-            {/* Email Field */}
+            {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Email
@@ -83,11 +83,11 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="you@example.com"
-                className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full bg-white/5 border border-white/10 text-white rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500/50 focus:bg-white/8 transition-all placeholder-gray-500"
               />
             </div>
 
-            {/* Password Field */}
+            {/* Password */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Password
@@ -98,15 +98,15 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="••••••••"
-                className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full bg-white/5 border border-white/10 text-white rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500/50 focus:bg-white/8 transition-all placeholder-gray-500"
               />
             </div>
 
-            {/* Submit Button */}
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors text-sm"
+              className="w-full btn-gradient text-white font-semibold py-3 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
@@ -116,8 +116,8 @@ export default function LoginPage() {
           {/* Register Link */}
           <p className="text-center text-gray-400 text-sm mt-6">
             Don't have an account?{' '}
-            <Link href="/register" className="text-blue-400 hover:text-blue-300 font-medium">
-              Create one
+            <Link href="/register" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+              Create one free
             </Link>
           </p>
 

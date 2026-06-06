@@ -7,7 +7,6 @@ import Link from 'next/link';
 
 export default function RegisterPage() {
   const router = useRouter();
-
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -27,7 +26,6 @@ export default function RegisterPage() {
     setLoading(true);
     setError('');
 
-    // Client side validation
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
       setError('Please fill in all fields');
       setLoading(false);
@@ -47,7 +45,6 @@ export default function RegisterPage() {
     }
 
     try {
-      // Step 1 — Create the account via our register API
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -66,8 +63,6 @@ export default function RegisterPage() {
         return;
       }
 
-      // Step 2 — Auto login after successful registration
-      // No need to redirect to login page manually
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
@@ -75,12 +70,10 @@ export default function RegisterPage() {
       });
 
       if (result?.error) {
-        // Account created but login failed — just send to login page
         router.push('/login');
         return;
       }
 
-      // All good — go to home feed
       router.push('/');
       router.refresh();
 
@@ -91,22 +84,29 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4 relative overflow-hidden">
 
-        {/* Header */}
+      {/* Background orbs */}
+      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="w-full max-w-md relative z-10">
+
+        {/* Logo */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white">VlogApp</h1>
-          <p className="text-gray-400 mt-2">Create your account</p>
+          <Link href="/">
+            <h1 className="text-4xl font-black gradient-text mb-2">VlogApp</h1>
+          </Link>
+          <p className="text-gray-400">Create your account and start sharing</p>
         </div>
 
-        {/* Form Card */}
-        <div className="bg-gray-900 rounded-2xl p-8 shadow-xl border border-gray-800">
+        {/* Card */}
+        <div className="glass rounded-3xl p-8 border border-white/10">
 
-          {/* Error Message */}
+          {/* Error */}
           {error && (
-            <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg mb-6 text-sm">
-              {error}
+            <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-2xl mb-6 text-sm flex items-center gap-2">
+              <span>⚠️</span> {error}
             </div>
           )}
 
@@ -122,8 +122,8 @@ export default function RegisterPage() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Milind Sharma"
-                className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                placeholder="Milind Lanje"
+                className="w-full bg-white/5 border border-white/10 text-white rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500/50 transition-all placeholder-gray-500"
               />
             </div>
 
@@ -138,7 +138,7 @@ export default function RegisterPage() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="you@example.com"
-                className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full bg-white/5 border border-white/10 text-white rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500/50 transition-all placeholder-gray-500"
               />
             </div>
 
@@ -153,7 +153,7 @@ export default function RegisterPage() {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Min. 8 characters"
-                className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full bg-white/5 border border-white/10 text-white rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500/50 transition-all placeholder-gray-500"
               />
             </div>
 
@@ -168,7 +168,7 @@ export default function RegisterPage() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 placeholder="••••••••"
-                className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full bg-white/5 border border-white/10 text-white rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500/50 transition-all placeholder-gray-500"
               />
             </div>
 
@@ -176,7 +176,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors text-sm"
+              className="w-full btn-gradient text-white font-semibold py-3 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {loading ? 'Creating account...' : 'Create Account'}
             </button>
@@ -186,7 +186,7 @@ export default function RegisterPage() {
           {/* Login Link */}
           <p className="text-center text-gray-400 text-sm mt-6">
             Already have an account?{' '}
-            <Link href="/login" className="text-blue-400 hover:text-blue-300 font-medium">
+            <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
               Sign in
             </Link>
           </p>
