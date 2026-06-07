@@ -2,10 +2,10 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 
-const ThemeContext = createContext();
+const ThemeContext = createContext({ theme: 'light', toggleTheme: () => {} });
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(undefined);
+  const [theme, setTheme] = useState('light');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -37,10 +37,6 @@ export function ThemeProvider({ children }) {
     }
   };
 
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
@@ -50,8 +46,5 @@ export function ThemeProvider({ children }) {
 
 export function useTheme() {
   const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme must be used within ThemeProvider');
-  }
   return context;
 }
