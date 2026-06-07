@@ -1,9 +1,16 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Vlog from '@/models/Vlog';
+import mongoose from 'mongoose';
 
-export async function POST(request, { params }) {
+export async function POST(request, { params: paramsPromise }) {
   try {
+    const params = await paramsPromise;
+
+    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+      return NextResponse.json({ success: false, error: 'Vlog not found' }, { status: 404 });
+    }
+
     await connectDB();
 
     const vlog = await Vlog.findById(params.id);

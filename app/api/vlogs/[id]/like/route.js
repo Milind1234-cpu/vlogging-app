@@ -3,9 +3,16 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import Vlog from '@/models/Vlog';
+import mongoose from 'mongoose';
 
-export async function POST(request, { params }) {
+export async function POST(request, { params: paramsPromise }) {
   try {
+    const params = await paramsPromise;
+
+    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+      return NextResponse.json({ success: false, error: 'Vlog not found' }, { status: 404 });
+    }
+
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json(

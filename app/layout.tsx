@@ -4,7 +4,9 @@ import './globals.css';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import SessionProvider from '@/components/layout/SessionProvider';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 
 const geist = Geist({ subsets: ['latin'] });
 
@@ -23,13 +25,34 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${geist.className} bg-gray-950 min-h-screen`}>
-        <SessionProvider session={session}>
-          <Navbar />
-          <main className="max-w-7xl mx-auto px-4 py-6">
-            {children}
-          </main>
-        </SessionProvider>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme');
+                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  var initial = theme || (prefersDark ? 'dark' : 'light');
+                  if (initial === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className={`${geist.className} bg-gray-50 dark:bg-gray-950 min-h-screen transition-colors`}>
+        <ThemeProvider>
+          <SessionProvider session={session}>
+            <Navbar />
+            <main className="max-w-7xl mx-auto px-4 py-6">
+              {children}
+            </main>
+            <Footer />
+          </SessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

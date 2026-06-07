@@ -2,10 +2,16 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import Vlog from '@/models/Vlog';
+import mongoose from 'mongoose';
 
 export async function GET(request, { params: paramsPromise }) {
   try {
     const params = await paramsPromise;
+
+    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+      return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 });
+    }
+
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '9');

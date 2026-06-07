@@ -1,11 +1,11 @@
-import NextAuth from 'next-auth';
+import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 
 export const authOptions = {
   session: {
-    strategy: 'jwt',
+    strategy: 'jwt' as const,
     maxAge: 30 * 24 * 60 * 60,
   },
   providers: [
@@ -53,8 +53,8 @@ export const authOptions = {
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.id;
-        session.user.avatar = token.avatar;
+        session.user.id = token.id as string;
+        session.user.avatar = token.avatar as string;
       }
       return session;
     },
@@ -64,4 +64,4 @@ export const authOptions = {
     error: '/login',
   },
   secret: process.env.NEXTAUTH_SECRET,
-};
+} satisfies NextAuthOptions;

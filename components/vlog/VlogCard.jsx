@@ -34,10 +34,10 @@ function timeAgo(dateString) {
 export default function VlogCard({ vlog }) {
   return (
     <Link href={`/vlog/${vlog._id}`} className="group block vlog-card">
-      <div className="bg-gray-900/60 rounded-2xl overflow-hidden border border-white/5 hover:border-indigo-500/30 transition-all duration-300">
+      <div className="bg-white/80 dark:bg-gray-900/60 rounded-2xl overflow-hidden border border-gray-200 dark:border-white/5 hover:border-indigo-500/30 transition-all duration-300">
 
         {/* Thumbnail */}
-        <div className="relative aspect-video bg-gray-800 overflow-hidden">
+        <div className="relative aspect-video bg-gray-200 dark:bg-gray-800 overflow-hidden">
           {vlog.thumbnailUrl ? (
             <Image
               src={vlog.thumbnailUrl}
@@ -47,8 +47,8 @@ export default function VlogCard({ vlog }) {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
-              <span className="text-gray-600 text-4xl">🎬</span>
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-800 dark:to-gray-900">
+              <span className="text-gray-400 dark:text-gray-600 text-4xl">🎬</span>
             </div>
           )}
 
@@ -73,13 +73,13 @@ export default function VlogCard({ vlog }) {
         {/* Card Body */}
         <div className="p-4">
           {/* Title */}
-          <h3 className="text-white font-semibold text-sm leading-snug line-clamp-2 mb-3 group-hover:text-indigo-300 transition-colors">
+          <h3 className="text-gray-900 dark:text-white font-semibold text-sm leading-snug line-clamp-2 mb-3 group-hover:text-indigo-500 dark:group-hover:text-indigo-300 transition-colors">
             {vlog.title}
           </h3>
 
           {/* Creator Row */}
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 ring-1 ring-white/10">
+            <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 ring-1 ring-gray-200 dark:ring-white/10">
               {vlog.creator?.avatar ? (
                 <img src={vlog.creator.avatar} alt={vlog.creator.name} className="w-full h-full object-cover" />
               ) : (
@@ -88,7 +88,7 @@ export default function VlogCard({ vlog }) {
                 </div>
               )}
             </div>
-            <span className="text-gray-400 text-xs truncate">{vlog.creator?.name}</span>
+            <span className="text-gray-600 dark:text-gray-400 text-xs truncate">{vlog.creator?.name}</span>
           </div>
 
           {/* Stats Row */}

@@ -47,7 +47,7 @@ export async function GET(request) {
     startOfMonth.setHours(0, 0, 0, 0);
 
     const viewsThisMonth = allVlogs
-      .filter((v) => new Date(v.updatedAt) >= startOfMonth)
+      .filter((v) => new Date(v.createdAt) >= startOfMonth)
       .reduce((sum, v) => sum + (v.viewCount || 0), 0);
 
     return NextResponse.json({

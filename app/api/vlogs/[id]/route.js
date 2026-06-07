@@ -4,11 +4,16 @@ import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import Vlog from '@/models/Vlog';
 import cloudinary from '@/lib/cloudinary';
+import mongoose from 'mongoose';
 
 // GET /api/vlogs/:id — fetch single vlog
 export async function GET(request, { params: paramsPromise }) {
   try {
     const params = await paramsPromise;
+
+    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+      return NextResponse.json({ success: false, error: 'Vlog not found' }, { status: 404 });
+    }
     await connectDB();
 
     const vlog = await Vlog.findById(params.id)
@@ -32,6 +37,7 @@ export async function GET(request, { params: paramsPromise }) {
       category: vlog.category,
       status: 'published',
     })
+      .sort({ viewCount: -1 })
       .limit(4)
       .populate('creator', 'name avatar')
       .lean();
@@ -57,6 +63,11 @@ export async function GET(request, { params: paramsPromise }) {
 export async function PATCH(request, { params: paramsPromise }) {
   try {
     const params = await paramsPromise;
+
+    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+      return NextResponse.json({ success: false, error: 'Vlog not found' }, { status: 404 });
+    }
+
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json(
@@ -109,6 +120,11 @@ export async function PATCH(request, { params: paramsPromise }) {
 export async function DELETE(request, { params: paramsPromise }) {
   try {
     const params = await paramsPromise;
+
+    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+      return NextResponse.json({ success: false, error: 'Vlog not found' }, { status: 404 });
+    }
+
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json(

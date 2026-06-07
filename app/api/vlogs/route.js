@@ -10,8 +10,8 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
 
     // Read query params with defaults
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '12');
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1') || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '12') || 12));
     const sort = searchParams.get('sort') || 'newest';
     const category = searchParams.get('category') || '';
     const search = searchParams.get('search') || '';
