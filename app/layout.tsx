@@ -24,8 +24,9 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions);
 
   return (
-    <html lang="en">
-      <head>
+    <html lang="en" suppressHydrationWarning>
+      <head />
+      <body className={`${geist.className} bg-gray-50 dark:bg-gray-950 min-h-screen transition-colors`} suppressHydrationWarning>
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -42,8 +43,6 @@ export default async function RootLayout({
             `,
           }}
         />
-      </head>
-      <body className={`${geist.className} bg-gray-50 dark:bg-gray-950 min-h-screen transition-colors`}>
         <ThemeProvider>
           <SessionProvider session={session}>
             <Navbar />
