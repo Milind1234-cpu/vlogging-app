@@ -27,22 +27,6 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head />
       <body className={`${geist.className} bg-gray-50 dark:bg-gray-950 min-h-screen transition-colors`} suppressHydrationWarning>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var theme = localStorage.getItem('theme');
-                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  var initial = theme || (prefersDark ? 'dark' : 'light');
-                  if (initial === 'dark') {
-                    document.documentElement.classList.add('dark');
-                  }
-                } catch (e) {}
-              })();
-            `,
-          }}
-        />
         <ThemeProvider>
           <SessionProvider session={session}>
             <Navbar />

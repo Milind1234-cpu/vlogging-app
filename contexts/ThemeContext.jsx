@@ -26,19 +26,30 @@ export function ThemeProvider({ children }) {
 
   // Apply theme changes
   useEffect(() => {
+    console.log('Theme effect running. Mounted:', mounted, 'Theme:', theme);
     if (mounted) {
+      const htmlElement = document.documentElement;
       if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
+        console.log('Adding dark class to html');
+        htmlElement.classList.add('dark');
+        htmlElement.style.colorScheme = 'dark';
       } else {
-        document.documentElement.classList.remove('dark');
+        console.log('Removing dark class from html');
+        htmlElement.classList.remove('dark');
+        htmlElement.style.colorScheme = 'light';
       }
+      console.log('HTML classes after update:', htmlElement.className);
+      console.log('Color scheme:', htmlElement.style.colorScheme);
     }
   }, [theme, mounted]);
 
   const toggleTheme = () => {
+    console.log('Toggle theme called! Current theme:', theme);
     const newTheme = theme === 'dark' ? 'light' : 'dark';
+    console.log('New theme will be:', newTheme);
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
+    console.log('Theme updated in localStorage');
   };
 
   return (
